@@ -1,0 +1,440 @@
+package swing.ui;
+
+/*
+ * To change this template, choose Tools | Templates and open the template in
+ * the editor.
+ */
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import swing.annotation.GridSuport;
+import swing.model.DefaultModel;
+
+/**
+ *
+ * @author itakenami
+ */
+public class DefaultList extends javax.swing.JPanel {
+
+    //Model associado a este List
+    private DefaultModel defaultModel;
+    //For associado a este List (Pode-se associar um novo form)
+    private DefaultForm defaultForm;
+    
+    //Tabs para as relação de 1/n e n/n
+    private HashMap<String, ViewTabPanel> tabs;
+    
+    //JFrame no qual o List está rodando
+    private JFrame frame;
+    
+    //Largura do Form que será aberto
+    private int formWidth;
+    
+    //Altura do form que será aberto
+    private int formHeight;
+
+    public DefaultList(JFrame frame, DefaultModel defaultModel, DefaultForm defaultForm, int formWidth, int formHeight) {
+        init(frame, defaultModel, defaultForm, formWidth, formHeight);
+    }
+    
+    public DefaultList(JFrame frame, DefaultModel defaultModel, int formWidth, int formHeight) {
+        init(frame, defaultModel, null, formWidth, formHeight);
+    }
+
+    public DefaultList(JFrame frame, DefaultModel defaultModel) {
+        init(frame, defaultModel, null, 450, defaultModel.getViewFields().getPreferedHeight());
+    }
+
+    public void init(JFrame frame, DefaultModel defaultModel, DefaultForm defaultForm, int formWidth, int formHeight) {
+        
+        this.frame = frame;
+        this.defaultModel = defaultModel;
+        
+        this.defaultForm = defaultForm;
+        this.formHeight = formHeight;
+        this.formWidth = formWidth;
+        
+        tabs = new HashMap<String, ViewTabPanel>();
+        
+        initComponents();
+        
+        preencherGrid(defaultModel.findStart());
+        
+    }
+
+    public JFrame getFrameContent() {
+        return frame;
+    }
+    
+    public DefaultForm getDefaultForm(){
+        return defaultForm;
+    }
+
+    public int getDefaultFormWidth() {
+        return formWidth;
+    }
+
+    public int getDefaultFormHeight() {
+        return formHeight;
+    }
+    
+    public void addRegister(){
+        if(!DefaultForm.SHOW){
+            defaultForm = new DefaultForm(this.defaultModel, this);
+            defaultForm.setLocationRelativeTo(frame);
+            defaultForm.showForm();
+        }
+    }
+    
+    public void editRegister(){
+        if(!DefaultForm.SHOW){
+            if (getSelectedID() > -1) {
+
+                Long id = new Long((String) jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0));
+                defaultForm = new DefaultForm((DefaultModel) defaultModel.findById(id), this);
+                defaultForm.setLocationRelativeTo(frame);
+                defaultForm.showForm();
+            }
+        }
+    }
+    
+    public void createViewTab(String titulo, Set<DefaultModel> models) {
+
+        if (tabs.containsKey(titulo)) {
+            tabs.get(titulo).loadData(models);
+        } else {
+            ViewTabPanel tab = new ViewTabPanel(models);
+            tabs.put(titulo, tab);
+            jTabbedPane1.addTab(titulo, tab);
+        }
+
+    }
+
+    public Long getSelectedID() {
+        if (jTable1.getSelectedRow() > -1) {
+            return new Long((String) jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0));
+        } else {
+            JOptionPane.showMessageDialog(frame, "Selecione um registro para realizar esta ação.", "INFO", JOptionPane.INFORMATION_MESSAGE);
+            return new Long(-1);
+        }
+    }
+
+    public void preencherGrid(List<DefaultModel> models) {
+
+        jTable1.setModel(GridSuport.getInstance().getGridModel(defaultModel));
+
+        int[] width = GridSuport.getInstance().getGridWidth(defaultModel);
+
+        for (int x = 0; x < width.length; x++) {
+            jTable1.getColumnModel().getColumn(x).setMinWidth(width[x]);
+            jTable1.getColumnModel().getColumn(x).setPreferredWidth(width[x]);
+        }
+
+        //List<DefaultModel> models = defaultModel.findStart();
+        DefaultTableModel aModel = (DefaultTableModel) jTable1.getModel();
+
+        for (int x = 0; x < models.size(); x++) {
+
+            String[] fields = models.get(x).getGridFields().getFields();
+            String[] objects = new String[fields.length+1];
+            
+            for (int y = 0; y < fields.length; y++) {
+                objects[y] = fields[y];
+            }
+
+            aModel.addRow(objects);
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        jTable1.setToolTipText("Selecione um registro");
+        jTable1.setRowHeight(20);
+        jTable1.setShowGrid(true);
+        jTable1.setShowVerticalLines(false);
+        jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                gridClick(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Campo", "Conteúdo"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable2.setToolTipText("Informações");
+        jTable2.setRowHeight(24);
+        jTable2.setShowGrid(true);
+        jTable2.setShowHorizontalLines(false);
+        jTable2.setShowVerticalLines(false);
+        jTable2.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(jTable2);
+        jTable2.getColumnModel().getColumn(0).setPreferredWidth(120);
+        jTable2.getColumnModel().getColumn(0).setMaxWidth(200);
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5>Informações</body></html>", jPanel1);
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/swing/resource/add-icon.png"))); // NOI18N
+        jButton1.setText("Novo");
+        jButton1.setToolTipText("Novo registro");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novoClick(evt);
+            }
+        });
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/swing/resource/pencil-icon.png"))); // NOI18N
+        jButton2.setText("Editar");
+        jButton2.setToolTipText("Editar registro selecionado");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editarClick(evt);
+            }
+        });
+
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/swing/resource/delete-icon.png"))); // NOI18N
+        jButton3.setText("Excluir");
+        jButton3.setToolTipText("Excluir registro selecionado");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exlcuirClick(evt);
+            }
+        });
+
+        jTextField1.setForeground(new java.awt.Color(102, 102, 102));
+        jTextField1.setText("Digite algo e tecle <enter> para filtrar...");
+        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                recebeuFocus(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                perdeuFocus(evt);
+            }
+        });
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                filtrar(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+                    .add(layout.createSequentialGroup()
+                        .add(jButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 86, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jButton2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 86, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jButton3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 86, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jTextField1))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jTabbedPane1)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jTabbedPane1)
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(jButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jButton2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jButton3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void gridClick(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gridClick
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+                null,
+                new String[]{
+                    "Campo", "Conteúdo"
+                }) {
+
+            Class[] types = new Class[]{
+                java.lang.String.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean[]{
+                false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types[columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return false;//canEdit[columnIndex];
+            }
+        });
+
+
+        jTable2.getColumnModel().getColumn(0).setMinWidth(120);
+        jTable2.getColumnModel().getColumn(0).setWidth(120);
+        jTable2.getColumnModel().getColumn(0).setMaxWidth(200);
+        jTable2.getColumnModel().getColumn(1).setResizable(true);
+        
+        jTable2.setDefaultRenderer(String.class, new CelBoldRender());
+        
+        Long id = new Long((String) jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0));
+        DefaultModel c = (DefaultModel) defaultModel.findById(id);
+
+        List<ModelField.Field> fields = c.getViewFields().getListFields();
+
+        for (int x = 0; x < fields.size(); x++) {
+            ModelField.Field field = fields.get(x);
+            switch (field.type) {
+                case ModelField.LISTBOX:
+                    createViewTab(field.header, (Set<DefaultModel>) field.field);
+                    break;
+                case ModelField.DATE:
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                    String[] rowdate = {field.header, field.field == null ? "" : sdf.format(field.field)};
+                    ((DefaultTableModel) jTable2.getModel()).addRow(rowdate);
+                    break;
+                default:
+                    String[] row = {field.header, field.field == null ? "" : field.field.toString()};
+                    ((DefaultTableModel) jTable2.getModel()).addRow(row);
+            }
+
+        }
+           
+    }//GEN-LAST:event_gridClick
+
+    private void novoClick(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novoClick
+        addRegister();
+    }//GEN-LAST:event_novoClick
+    
+    private void editarClick(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarClick
+
+        editRegister();
+
+    }//GEN-LAST:event_editarClick
+
+    
+    private void exlcuirClick(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exlcuirClick
+
+        if (getSelectedID() > -1) {
+            if (JOptionPane.showConfirmDialog(frame, "Deseja realmente excluir o registro??", "INFO", JOptionPane.INFORMATION_MESSAGE) == 0) {
+                if (defaultModel.delete(getSelectedID())) {
+                    JOptionPane.showMessageDialog(frame, "Registro apagado com sucesso.", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                    preencherGrid(defaultModel.findStart());
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Erro ao apagar registro.", "ERRO", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }//GEN-LAST:event_exlcuirClick
+
+    private void perdeuFocus(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_perdeuFocus
+        jTextField1.setForeground(new Color(102, 102, 102));
+        jTextField1.setText("Digite algo e tecle <enter> para filtrar...");
+    }//GEN-LAST:event_perdeuFocus
+
+    private void recebeuFocus(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_recebeuFocus
+        jTextField1.setText("");
+        jTextField1.setForeground(new Color(0, 0, 0));
+    }//GEN-LAST:event_recebeuFocus
+
+    private void filtrar(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_filtrar
+        if (evt.getID() == KeyEvent.KEY_PRESSED) {
+            if(evt.getKeyCode()==10){
+                preencherGrid(defaultModel.filterGrid(jTextField1.getText()));
+            }
+        }
+    }//GEN-LAST:event_filtrar
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTextField jTextField1;
+    // End of variables declaration//GEN-END:variables
+    
+}
