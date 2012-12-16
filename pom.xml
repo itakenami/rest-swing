@@ -34,7 +34,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>rest-swing</finalName>
+
     </build>
 
     <dependencies>
